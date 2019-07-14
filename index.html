@@ -26,10 +26,15 @@
 
             <ul>
                 <li><p>Click <button class="btn btn-xs btn-primary" onclick="refreshBlobList()">ListBlobs</button> button to view the blobs under your selected container</p></li>
-                <li><p>
-                    Click <button id="upload-button" class="btn btn-xs btn-primary" onclick="uploadBlobByStream(false)">UploadBlob</button> button to upload a local file to current container after selecting a file:
-                </p>
-                <p> <input type="file" id="files" name="file" onclick="displayProcess(0)" /> </p></li>
+                <li><p> WordPress Post ID <input type="text" id="wppostid" name="postid" /></p><li>
+                <li>
+                    <p>
+                        <input type="file" id="files" name="file" onclick="displayProcess(0)" />
+                    </p>
+                    <p>
+                        Click <button id="upload-button" class="btn btn-xs btn-primary" onclick="uploadBlobByStream(false)">UploadBlob</button> button to upload a local file to current container after selecting a file:
+                    </p>
+                </li>
                 <li><p> Click "<b>Delete</b>" button to delete the blob</p></li>
                 <li><p> Click "<b>Download</b>" link to download a blob to local</p></li>
             </ul>
@@ -95,8 +100,6 @@
                         var output = [];
                         output.push('<tr>',
                                         '<th>ContainerName</th>',
-                                        '<th>ContainerETag</th>',
-                                        '<th>LastModified</th>',
                                         '<th>Operations</th>',
                                     '</tr>');
                         if (results.entries.length < 1) {
@@ -105,8 +108,6 @@
                         for (var i = 0, container; container = results.entries[i]; i++) {
                             output.push('<tr>',
                                             '<td>', container.name, '</td>',
-                                            '<td>', container.etag, '</td>',
-                                            '<td>', container.lastModified, '</td>',
                                             '<td>', '<button class="btn btn-xs btn-danger" onclick="deleteContainer(\'', container.name ,'\')">Delete</button> ',
                                                     '<button class="btn btn-xs btn-success" onclick="viewContainer(\'', container.name ,'\')">Select</button>', '</td>',
                                         '</tr>');
@@ -193,6 +194,14 @@
                     alert('Please select a file!');
                     return;
                 }
+
+                var postid = document.getElementById('wppostid').value;
+                if (!postid == "") {
+                    alert('Please enter a Wordpress ID!');
+                    return;
+                }
+
+//                var file = postid + '-' + files[0];
                 var file = files[0];
 
                 var blobService = getBlobService();
