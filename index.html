@@ -26,7 +26,6 @@
 
             <ul>
                 <li><p>Click <button class="btn btn-xs btn-primary" onclick="refreshBlobList()">ListBlobs</button> button to view the blobs under your selected container</p></li>
-                <li><p> WordPress Post ID <input type="text" id="wppostid" name="postid" /></p><li>
                 <li>
                     <p>
                         <input type="file" id="files" name="file" onclick="displayProcess(0)" />
@@ -40,6 +39,11 @@
             </ul>
 
             <hr/>
+            
+            <div>
+                <p><b><label>Last File Uploaded: </label></b> <input type="text" size="150" id="lastupload" disabled=true/></p>
+            </div>
+            
             <div> Uploaded Bytes: <font id="read"> </font> </div> 
             <div class="progress">
                 <div id="progress" class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">
@@ -120,7 +124,7 @@
             function viewContainer(selectedContainer) {
                 container = selectedContainer;
                 document.getElementById('container').value = container;
-                alert('Selected ' + container + ' !');
+//                alert('Selected ' + container + ' !');
                 refreshBlobList();
             }
 
@@ -195,13 +199,8 @@
                     return;
                 }
 
-                var postid = document.getElementById('wppostid').value;
-                if (!postid == "") {
-                    alert('Please enter a Wordpress ID!');
-                    return;
-                }
+                var identifier = Math.random().toString().replace(/0\./, ''); 
 
-//                var file = postid + '-' + files[0];
                 var file = files[0];
 
                 var blobService = getBlobService();
@@ -221,7 +220,11 @@
                 blobService.singleBlobPutThresholdInBytes = blockSize;
 
                 var finishedOrError = false;
-                var speedSummary = blobService.createBlockBlobFromBrowserFile(container, file.name, file, options, function(error, result, response) {
+                
+                var filename = identifier + '-' + file.name;
+                filename = filename.replace(/ /g,"_");
+
+                var speedSummary = blobService.createBlockBlobFromBrowserFile(container, filename, file, options, function(error, result, response) {
                     finishedOrError = true;
                     btn.disabled = false;
                     btn.innerHTML = 'UploadBlob';
@@ -232,8 +235,9 @@
                     } else {
                         displayProcess(100);
                         setTimeout(function() { // Prevent alert from stopping UI progress update
-                            alert('Upload successfully!');
+ //                           alert('Upload successfully!');
                         }, 1000);
+                        document.getElementById('lastupload').value = blobUri + '/' + container + '/' + filename;
                         refreshBlobList();
                     }
                 });
